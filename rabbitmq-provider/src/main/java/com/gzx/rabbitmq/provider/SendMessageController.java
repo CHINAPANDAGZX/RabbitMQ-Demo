@@ -1,21 +1,24 @@
 package com.gzx.rabbitmq.provider;
 
 
+import com.gzx.rabbitmq.provider.timeToLiveExchange.TimeToLiveRabbitProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @Author: GZX
  * @DateTime: 2020/5/26 14:04
  * @Description: 请补充方法描述
  */
+
+@Slf4j
 @RestController
 public class SendMessageController {
 
@@ -24,6 +27,8 @@ public class SendMessageController {
      */
     @Autowired
     RabbitTemplate rabbitTemplate;
+    @Autowired
+    TimeToLiveRabbitProvider timeToLiveRabbitProvider;
 
     @GetMapping("/sendDirectMessage")
     public String sendDirectMessage() {
@@ -76,6 +81,12 @@ public class SendMessageController {
         map.put("createTime", createTime);
         rabbitTemplate.convertAndSend("fanoutExchange", null, map);
         return "ok";
+    }
+
+    @RequestMapping("sendmsg")
+    public void sendMsg(String msg, Integer delayType){
+        log.info("当前时间：{},收到请求，msg:{},delayType:{}", new Date(), msg, delayType);
+        timeToLiveRabbitProvider.sendMsg(msg, Objects.requireNonNull(Integer.valueOf(delayType)));
     }
 
 }
