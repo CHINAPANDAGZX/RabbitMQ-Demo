@@ -11,7 +11,10 @@ spring:
     username: root
     password: root
     #确认消息已发送到交换机(Exchange)
-    publisher-confirms: true
+    #旧版本已经失效
+#    publisher-confirms: true
+    #采用新版本配置启用回调函数
+    publisher-confirm-type: correlated
     #确认消息已发送到队列(Queue)
     publisher-returns: true
     #虚拟host 可以不设置,使用server默认host
