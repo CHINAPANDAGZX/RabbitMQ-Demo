@@ -4,6 +4,7 @@ package com.gzx.rabbitmq.provider;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,13 @@ public class RabbitConfig {
         rabbitTemplate.setConnectionFactory(connectionFactory);
         //设置开启Mandatory,才能触发回调函数,无论消息推送结果怎么样都强制调用回调函数
         rabbitTemplate.setMandatory(true);
+
+        /**
+          * 如果消息没有到exchange,则confirm回调,ack=false
+          * 如果消息到达exchange,则confirm回调,ack=true
+          * exchange到queue成功,则不回调return
+          * exchange到queue失败,则回调return(需设置mandatory=true,否则不回回调,消息就丢了)
+          */
 
         //所有情况都会触发
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
@@ -47,6 +55,18 @@ public class RabbitConfig {
         });
 
         return rabbitTemplate;
+    }
+
+    /**
+     * create by: GZX
+     * description: 动态队列需要的配置
+     * create time: 2021/4/25 10:57
+     * @Param: RabbitAdmin
+     * @return 
+     */
+    @Bean
+    public RabbitAdmin createRabbitAdmin(ConnectionFactory connectionFactory) {
+        return new RabbitAdmin(connectionFactory);
     }
 
 }
