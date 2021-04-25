@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @Author: GZX
  * @DateTime: 2020/5/26 14:03
- * @Description: 请补充方法描述
+ * @Description: Direct Exchange 直连型交换机配置类
  */
 @Configuration
 public class DirectRabbitConfig {
